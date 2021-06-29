@@ -12,3 +12,4 @@ django-ckeditor
 django-filter
 beautifulsoup4
 lxml
+heroku
