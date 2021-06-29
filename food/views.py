@@ -7,7 +7,7 @@ from rest_framework import status
 from commentary.permissions import IsOwnerOrReadOnly
 from food import serializers
 # from food.management.commands.parser import main
-from food.models import Food, Like, Favorites, Foods
+from food.models import Food, Like, Basket, Favorites, Foods
 from django_filters import rest_framework as filters
 from rest_framework.pagination import PageNumberPagination
 
@@ -60,6 +60,25 @@ class FoodUpdateView(generics.UpdateAPIView):
     queryset = Food.objects.all()
     serializer_class = serializers.FoodSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, )
+
+
+class BasketListView(generics.ListAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = serializers.BasketSerializer
+
+
+class BasketCreateView(generics.CreateAPIView):
+    serializer_class = serializers.BasketSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class BasketDeleteView(generics.DestroyAPIView):
+    queryset = Basket.objects.all()
+    serializer_class = serializers.BasketSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 class LikeListView(generics.ListAPIView):

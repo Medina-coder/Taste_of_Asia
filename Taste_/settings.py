@@ -1,4 +1,4 @@
-# from decouple import config
+from decouple import config
 from datetime import timedelta
 from pathlib import Path
 
@@ -11,12 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!zegx0=^7kw&@f=j+qv(&6e(cpa&4a^wo3a=@7sr7gvykgm!dw'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(' ')
 
 
 # Application definition
@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'ckeditor_uploader',
+    'django_filters',
+
 
 
     # our apps
@@ -81,12 +83,11 @@ WSGI_APPLICATION = 'Taste_.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'res_db',
-        'USER': 'john',
-        'PASSWORD': '1',
-        'HOST': 'localhost',
-        'PORT': 5432,
-
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -129,6 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'static'
 
 
 # Default primary key field type
@@ -137,14 +139,15 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST_USER = "kedeikulkyzy.medina@gmail.com"
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 5432
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = "Your_Password"
+EMAIL_HOST_USER = "kedeikulkyzy.medina@gmail.com"
+EMAIL_HOST_PASSWORD = "Zina19491992"
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':

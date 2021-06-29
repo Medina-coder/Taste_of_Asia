@@ -43,6 +43,15 @@ class Image(models.Model):
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='images')
 
 
+class Basket(models.Model):
+    owner = models.ForeignKey(User, related_name='basket', on_delete=models.CASCADE)
+    product = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='basket')
+    basket = models.BooleanField()
+
+    class Meta:
+        unique_together = ['owner', 'product', ]
+
+
 class Favorites(models.Model):
     owner = models.ForeignKey(User, related_name='favorites', on_delete=models.CASCADE)
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='favorites')

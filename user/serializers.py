@@ -2,10 +2,13 @@ from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from user.send_mail import send_confirmation_email
+
 User = get_user_model()
 
 
 class RegisterApiSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(min_length=6, write_only=True, required=True)
     password2 = serializers.CharField(min_length=6, write_only=True, required=True)
 
     class Meta:
@@ -13,18 +16,39 @@ class RegisterApiSerializer(serializers.ModelSerializer):
         fields = ('email', 'first_name', 'last_name', 'password', 'password2')
 
     def validate(self, attrs):
+        password = attrs.get('password')
         password2 = attrs.pop("password2")
-        if attrs.get('password') != password2:
+        if password != password2:
             raise serializers.ValidationError("Password didn't match !")
-        if not attrs.get('password').isalnum():
-            raise serializers.ValidationError("Password field must be alpha and num!")
         return attrs
 
     def create(self, validated_data):
         user = User.objects.create_user(
             **validated_data
         )
+        send_confirmation_email(user)
         return user
+
+
+class ActivationSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    activation_code = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        code = attrs.get('activation_code')
+        if not User.objects.filter(email=email, activation_code=code).exists():
+            raise serializers.ValidationError(
+                'User not found'
+            )
+        return attrs
+
+    def activate(self):
+        data = self.validated_data
+        user = User.objects.get(**data)
+        user.is_active = True
+        user.activation_code = ''
+        user.save()
 
 
 class LoginSerializer(TokenObtainPairSerializer):

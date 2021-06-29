@@ -36,19 +36,20 @@ class UserManager(BaseUserManager):
 class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    password = models.CharField(max_length=100)
     activation_code = models.CharField(max_length=40, blank=True)
-    objects = UserManager()
     username = models.CharField(max_length=255, blank=True)
     email = models.EmailField('email address', unique=True)
     is_active = models.BooleanField(
         _('active'),
-        default=False,
+        default=True,
         help_text=_(
             'Designates whether this user should be treated as active. '
             'Unselect this instead of deleting accounts.'
         ),
     )
+
+    objects = UserManager()
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -59,6 +60,7 @@ class CustomUser(AbstractUser):
         import uuid
         code = str(uuid.uuid4())
         self.activation_code = code
+        self.save()
 
     def activate_with_code(self, code):
         if str(self.activation_code) != str(code):

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from category.serializers import CategorySerializer
 from commentary.serializers import CommentSerializer
-from food.models import Food, Like, Image, Favorites, Foods
+from food.models import Food, Like, Image, Basket, Favorites, Foods
 
 
 class FoodsSerializers(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class FavoritesSerializer(serializers.ModelSerializer):
         fields = ('food', 'favorites', 'owner',)
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
+class FoodImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = '__all__'
@@ -37,11 +37,11 @@ class FoodSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
     likes = LikeSerializer(many=True, read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
+    images = FoodImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Food
-        fields = ['title', 'body', 'price', 'quantity', 'owner', 'images', 'likes', 'comments', 'category',]
+        fields = ['title', 'body', 'price', 'quantity', 'owner', 'images', 'likes', 'comments', 'category',  ]
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -56,3 +56,9 @@ class FoodSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
 
+class BasketSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.email')
+
+    class Meta:
+        model = Basket
+        fields = ('basket', 'owner',)
