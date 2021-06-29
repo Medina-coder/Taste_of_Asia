@@ -12,7 +12,7 @@ schema_view = get_schema_view(
         default_version='v1',
         description='this is food order restaurant project',
         terms_of_service='http://www.google.com/policies/terms/',
-        contact=openapi.Contact(email='test@gmail.com'),
+        contact=openapi.Contact(email='kedeikulkyzy.medina@gmail.com'),
         license=openapi.License(name='BSD License')
     ),
     public=True,
@@ -20,15 +20,17 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path('swagger(?P<format>\.json|\.yaml)', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
+
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/accounts/', include('user.urls')),
     path('api/v1/foods/', include('food.urls')),
     path('api/v1/foods/categories/', include('category.urls')),
     path('api/v1/foods/comments/', include('commentary.urls')),
+
     # path('api/v1/rest-auth/', include('rest_auth.urls')),
 ]
 
